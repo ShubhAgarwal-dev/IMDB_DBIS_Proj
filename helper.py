@@ -1,4 +1,3 @@
-import json
 import logging
 from connection import run_select_query
 
@@ -26,6 +25,7 @@ def parse_basic(query: str, adult: bool):
                 "end_year": i[6]
             })
     return result
+
 
 def parse_akas(query: str):
     res = run_select_query(query)
@@ -62,3 +62,15 @@ def parse_person(query: str):
             "primary_profession": i[4]
         })
     return result
+
+
+def basic_sort_param_checker(param: str) -> bool:
+    param_list = [param]
+    if "," in param:
+        param_list = param.split(",")
+    valid_params = {"start_year", "end_year", "promotion_title", "original_title"}
+    for param in param_list:
+        param = param.strip()
+        if param not in valid_params:
+            return False
+    return True
