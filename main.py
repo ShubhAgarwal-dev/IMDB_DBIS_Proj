@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 import db_handler
@@ -7,7 +8,8 @@ import docs
 
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
-
+                    
+                    
 app = FastAPI(description=docs.description,
               openapi_tags=docs.tags_metadata)
 
