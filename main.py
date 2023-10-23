@@ -41,15 +41,23 @@ async def get_titles(adult: bool = True):
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/other_names/{tconst}")
-async def get_additional_titles(tconst: str):
+@app.get("/titles/other_names")
+async def get_additional_titles(tconst: str, response: Response):
+    if not helper.tconst_exists_in_relation("Akas", tconst):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
     query = Queries.akas.akas_titles_by_tconst(tconst)
+    response.status_code = status.HTTP_200_OK
     return helper.parse_akas(query)
 
 
 @app.get("/titles/name")
-async def get_title_by_name(sub_string: str, adult: bool = True):
+async def get_title_by_name(sub_string: str, adult: bool, response: Response):
+    if not sub_string:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
     query = Queries.basic.basic_title_by_name(sub_string)
+    response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
 
@@ -107,13 +115,20 @@ async def advanced_search(params: helper.SearchParams, adult: bool, response: Re
 
 
 @app.get("/actors")
-async def get_actors_for_title(tconst: str):
+async def get_actors_for_title(tconst: str, response: Response):
+    if not helper.tconst_exists_in_relation("Linker", tconst):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
     query = Queries.actors.get_actors_for_titles(tconst)
+    response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
 
 
 @app.get("/directors")
-async def get_directors_for_title(tconst: str):
-    query = f"""
-    SELECT * FROM "Director" D WHERE D.tconst='{tconst}';
-    """
+async def get_directors_for_title(tconst: str, response: Response):
+    if not helper.tconst_exists_in_relation("Director", tconst):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
+    query = Queries.directors.get_directors_for_title(tconst)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_person(query)

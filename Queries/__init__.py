@@ -1,5 +1,5 @@
-import actors
-import akas
-import basic
-import directors
-import writers
+import Queries.actors
+import Queries.akas
+import Queries.basic
+import Queries.directors
+import Queries.writers

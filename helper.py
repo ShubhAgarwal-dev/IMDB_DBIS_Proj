@@ -96,11 +96,11 @@ def parse_akas(query: str):
 def parse_person(query: str):
     res = run_select_query(query)
     result = {
-        "movies": [],
+        "persons": [],
         "status": 200
     }
     for i in res:
-        result["movies"].append({
+        result["persons"].append({
             "nconst": i[0],
             "name": i[1],
             "birth_year": i[2],
@@ -127,3 +127,17 @@ def advanced_param_validator(param: SearchParams) -> bool:
         return True
     elif param.num_params == 1:
         return False
+
+
+relations_with_tconst = {"Basic", "Akas", "Director", "Episode", "Linker", "Principal", "Writer"}
+
+
+def tconst_exists_in_relation(relation: str, tconst: str) -> bool:
+    if relation not in relations_with_tconst:
+        return False
+    query = f"""SELECT T.tconst from "{relation}" T WHERE T.tconst='{tconst}';"""
+    logging.debug(query)
+    res = run_select_query(query)
+    logging.debug(bool(res))
+    logging.debug(res)
+    return bool(res)
