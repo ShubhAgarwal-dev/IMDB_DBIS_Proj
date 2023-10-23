@@ -1,8 +1,55 @@
 import logging
-from connection import run_select_query
+from db_handler import run_select_query
+from pydantic import BaseModel
+from typing import Union
+from enum import Enum
 
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
+
+
+class Genres(Enum):
+    Fiction = 1
+    Crime = 2
+    Horror = 3
+    Ghoul = 4
+    Romance = 5
+    Fantasy = 6
+    Drama = 7
+    Action = 8
+    War = 9
+    Historical = 10
+    Erotic = 11
+    Adventure = 12
+    Mystery = 13
+    Anime = 14  # Anime ka 14
+    Documentary = 15
+
+
+class TitleTypes(Enum):
+    alternative = 1
+    dvd = 2
+    festival = 3
+    television = 4
+    video = 5
+    working = 6
+    original_title = 7
+    imdbDisplay = 8
+
+
+class SearchParams(BaseModel):
+    actor_name: Union[str | None] = None
+    director_name: Union[str | None] = None
+    writer_name: Union[str | None] = None
+    start_year: Union[str | int | None] = None
+    end_year: Union[str | int | None] = None
+    title: Union[str | None] = None
+    language: Union[str | None] = None
+    is_original_title: Union[bool | None] = None
+    attributes: Union[TitleTypes | None] = None
+    rating: Union[float | str | None] = None
+    genres: Union[Genres | None] = None
+    num_params: Union[int] = 0
 
 
 def parse_basic(query: str, adult: bool):
@@ -14,7 +61,6 @@ def parse_basic(query: str, adult: bool):
     }
     for i in res:
         if adult or i[4] == False:
-            logging.debug(f"Value of is_adult {i[4]} for the movie {i[2]}")
             result["movies"].append({
                 "t_const": i[0],
                 "title_type": i[1],
@@ -74,3 +120,10 @@ def basic_sort_param_checker(param: str) -> bool:
         if param not in valid_params:
             return False
     return True
+
+
+def advanced_param_validator(param: SearchParams) -> bool:
+    if param.num_params == 0:
+        return True
+    elif param.num_params == 1:
+        return False

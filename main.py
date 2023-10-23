@@ -1,11 +1,27 @@
 from fastapi import FastAPI, Response, status
 import logging
+
+import db_handler
 import helper
+import docs
 
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
 
-app = FastAPI()
+app = FastAPI(description=docs.description,
+              openapi_tags=docs.tags_metadata)
+
+
+@app.on_event("startup")
+async def app_startup():
+    logging.debug("APP STARTUP EVENT(S) STARTED")
+    db_handler.connect_to_db()
+
+
+@app.on_event("shutdown")
+async def app_shutdown():
+    logging.debug("APP SHUTDOWN EVENT(S) TAKING PLACE")
+    db_handler.disconnect_from_db()
 
 
 @app.get("/")
@@ -18,7 +34,7 @@ async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 
 
-@app.get("/titles")
+@app.get("/titles", tags=["Basic"])
 async def get_titles(adult: bool = True):
     query = """
         SELECT * FROM "Basic" b;
@@ -78,7 +94,8 @@ async def basic_search(param: str, val: str, adult: bool, response: Response):
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
-@app.get("titles/director")
+
+@app.get("/titles/director")
 async def title_by_director(director: str, adult: bool, response: Response):
     query = f"""
     SELECT DISTINCT * FROM "Basic" b WHERE b.tconst IN 
@@ -90,7 +107,7 @@ async def title_by_director(director: str, adult: bool, response: Response):
     return helper.parse_basic(query, adult)
 
 
-@app.get("titles/writer")
+@app.get("/titles/writer")
 async def title_by_writer(writer: str, adult: bool, response: Response):
     query = f"""
     SELECT DISTINCT * FROM "Basic" b WHERE b.tconst IN 
@@ -102,7 +119,7 @@ async def title_by_writer(writer: str, adult: bool, response: Response):
     return helper.parse_basic(query, adult)
 
 
-@app.get("titles/person")
+@app.get("/titles/person")
 async def title_by_person(name: str, adult: bool, response: Response):
     query = f"""
     SELECT DISTINCT *
@@ -114,3 +131,15 @@ async def title_by_person(name: str, adult: bool, response: Response):
     """
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
+
+
+@app.get("/titles/advSearch")
+async def advanced_search(params: helper.SearchParams, adult: bool, response: Response):
+    if not helper.advanced_param_validator(params):
+        response.status_code = status.HTTP_204_NO_CONTENT
+        return {"message": "send parameter correctly"}
+    query = """SELECT * FROM "Basic" b;"""
+    if params.num_params == 1:
+        return helper.parse_basic(query, adult)
+    response.status_code = status.HTTP_200_OK
+    return {"message": "Implementation in progress"}
