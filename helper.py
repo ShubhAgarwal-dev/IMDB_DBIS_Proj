@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Union
 from enum import Enum
 
-logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
+logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
 
 
