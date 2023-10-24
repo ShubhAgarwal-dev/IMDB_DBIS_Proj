@@ -1,8 +1,9 @@
-import psycopg2
-from psycopg2.extensions import connection
-import os
 import logging
+import os
+
+import psycopg2
 from dotenv import load_dotenv
+from psycopg2.extensions import connection
 
 load_dotenv()
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',

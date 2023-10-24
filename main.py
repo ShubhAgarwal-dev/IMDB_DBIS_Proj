@@ -1,10 +1,12 @@
+import logging
+
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
-import logging
+
 import Queries
 import db_handler
-import helper
 import docs
+import helper
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)

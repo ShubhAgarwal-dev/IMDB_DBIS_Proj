@@ -1,8 +1,10 @@
 import logging
-from db_handler import run_select_query
-from pydantic import BaseModel
-from typing import Union
 from enum import Enum
+from typing import Union
+
+from pydantic import BaseModel
+
+from db_handler import run_select_query
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
