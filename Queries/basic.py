@@ -15,6 +15,11 @@ def basic_title_order_by_params(param: str):
 
 
 def basic_title_filter_by_param_val(param: str, val: str):
+    if param == "genres":
+        val = "{"+ val + "}"
+        return f"""
+        SELECT DISTINCT * FROM "Basic" B WHERE B.{param} = '{val}';
+        """
     return f"""
     SELECT DISTINCT * FROM "Basic" b WHERE b.{param}='{val}';
     """

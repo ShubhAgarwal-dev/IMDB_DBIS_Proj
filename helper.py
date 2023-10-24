@@ -37,19 +37,19 @@ class TitleTypes(Enum):
     imdbDisplay = 8
 
 
-class SearchParams(BaseModel):
-    actor_name: Union[str | None] = None
-    director_name: Union[str | None] = None
-    writer_name: Union[str | None] = None
-    start_year: Union[str | int | None] = None
-    end_year: Union[str | int | None] = None
-    title: Union[str | None] = None
-    language: Union[str | None] = None
-    is_original_title: Union[bool | None] = None
-    attributes: Union[TitleTypes | None] = None
-    rating: Union[float | str | None] = None
-    genres: Union[Genres | None] = None
-    num_params: Union[int] = 0
+# class SearchParams(BaseModel):
+#     actor_name: Union[str  None] = None
+#     director_name: Union[str | None] = None
+#     writer_name: Union[str | None] = None
+#     start_year: Union[str | int | None] = None
+#     end_year: Union[str | int | None] = None
+#     title: Union[str | None] = None
+#     language: Union[str | None] = None
+#     is_original_title: Union[bool | None] = None
+#     attributes: Union[TitleTypes | None] = None
+#     rating: Union[float | str | None] = None
+#     genres: Union[Genres | None] = None
+#     num_params: Union[int] = 0
 
 
 def parse_basic(query: str, adult: bool):
@@ -117,7 +117,7 @@ def basic_sort_param_checker(param: str) -> bool:
     param_list = [param]
     if "," in param:
         param_list = param.split(",")
-    valid_params = {"start_year", "end_year", "promotion_title", "original_title"}
+    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "rating"}
     for param in param_list:
         param = param.strip()
         if param not in valid_params:
@@ -125,11 +125,19 @@ def basic_sort_param_checker(param: str) -> bool:
     return True
 
 
-def advanced_param_validator(param: SearchParams) -> bool:
-    if param.num_params == 0:
-        return True
-    elif param.num_params == 1:
+def basic_search_param_checker(param: str) -> bool:
+    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "generes", "rating"}
+    print(param)
+    if param not in valid_params:
         return False
+    return True
+
+
+# def advanced_param_validator(param: SearchParams) -> bool:
+#     if param.num_params == 0:
+#         return True
+#     elif param.num_params == 1:
+#         return False
 
 
 relations_with_tconst = {"Basic", "Akas", "Director", "Episode", "Linker", "Principal", "Writer"}
