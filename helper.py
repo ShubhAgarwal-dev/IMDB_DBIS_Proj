@@ -68,7 +68,10 @@ def parse_basic(query: str, adult: bool):
                 "promotional_title": i[3],
                 "is_adult": i[4],
                 "start_year": i[5],
-                "end_year": i[6]
+                "end_year": i[6],
+                "genres": i[7],
+                "rating": i[8],
+                "image_link": i[9]
             })
     return result
 

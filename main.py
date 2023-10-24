@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 import Queries
 import db_handler
@@ -12,6 +13,18 @@ logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(
 app = FastAPI(description=docs.description,
               openapi_tags=docs.tags_metadata)
 
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def app_startup():

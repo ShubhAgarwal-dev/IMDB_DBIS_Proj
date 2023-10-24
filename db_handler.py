@@ -11,6 +11,7 @@ logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(
 conn: connection
 
 
+
 def connect_to_db():
     global conn
     conn = psycopg2.connect(
