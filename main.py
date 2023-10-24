@@ -158,3 +158,9 @@ async def get_directors_for_title(tconst: str, response: Response):
     query = Queries.directors.get_directors_for_title(tconst)
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
+
+@app.get("/allPeople", tags=["Person"])
+async def get_people(response: Response):
+    query = Queries.persons.person_query()
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_person(query)

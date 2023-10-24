@@ -51,7 +51,7 @@ class SearchParams(BaseModel):
     attributes: Union[TitleTypes, None] = None
     rating: Union[float, str, None] = None
     genres: Union[Genres, None] = None
-    num_params: Union[int] = 0
+    num_params: Union[int, None] = 0
 
 
 def parse_basic(query: str, adult: bool):
