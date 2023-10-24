@@ -88,10 +88,10 @@ async def order_titles_by(param: str, adult: bool, response: Response):
 async def basic_search(param: str, val: str, adult: bool, response: Response):
     logging.debug(param)
     logging.debug(val)
-    # if not helper.basic_search_param_checker(param) or "," in param:
-    #     logging.debug("Request went here")
-    #     response.status_code = status.HTTP_204_NO_CONTENT
-    #     return
+    if not helper.basic_search_param_checker(param) or "," in param:
+        logging.debug("Request went here")
+        response.status_code = status.HTTP_204_NO_CONTENT
+        return
     query = Queries.basic.basic_title_filter_by_param_val(param, val)
     logging.info(query)
     response.status_code = status.HTTP_200_OK
@@ -119,16 +119,23 @@ async def title_by_person(name: str, adult: bool, response: Response):
     return helper.parse_basic(query, adult)
 
 
-# @app.post("/titles/advSearch")
-# async def advanced_search(params: helper.SearchParams, adult: bool, response: Response):
-#     if not helper.advanced_param_validator(params):
-#         response.status_code = status.HTTP_204_NO_CONTENT
-#         return {"message": "send parameter correctly"}
-#     query = """SELECT * FROM "Basic" b;"""
-#     if params.num_params == 1:
-#         return helper.parse_basic(query, adult)
-#     response.status_code = status.HTTP_200_OK
-#     return {"message": "Implementation in progress"}
+@app.get("/titles/genres")
+async def title_by_genres(gen_list: str, adult: bool, response: Response):
+    query = Queries.basic.basic_title_with_genre(gen_list)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query, adult)
+
+
+@app.post("/titles/advSearch")
+async def advanced_search(params: helper.SearchParams, adult: bool, response: Response):
+    if not helper.advanced_param_validator(params):
+        response.status_code = status.HTTP_204_NO_CONTENT
+        return {"message": "send parameter correctly"}
+    query = """SELECT * FROM "Basic" b;"""
+    if params.num_params == 1:
+        return helper.parse_basic(query, adult)
+    response.status_code = status.HTTP_200_OK
+    return {"message": "Implementation in progress"}
 
 
 @app.get("/actors")

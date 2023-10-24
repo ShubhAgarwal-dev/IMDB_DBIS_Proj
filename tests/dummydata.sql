@@ -1,3 +1,12 @@
+DELETE FROM "Writer";
+DELETE FROM "Director";
+DELETE FROM "Linker";
+DELETE FROM "Akas";
+DELETE FROM "Episode";
+DELETE FROM "Principal";
+DELETE FROM "Person";
+DELETE FROM "Basic";
+
 INSERT INTO "Basic" ("tconst", "title_type", "original_title", "promotion_title", "is_adult", "start_year", "end_year", "genres", "rating", "image_link")
 VALUES
 ('tt001', 'dvd', 'Movie Title 1', 'Promotion Title 1', true, 2000,NULL , '{Action, Drama}', 7.2, 'http://example.com/image1.jpg'),

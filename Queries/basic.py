@@ -25,6 +25,22 @@ def basic_title_filter_by_param_val(param: str, val: str):
     """
 
 
+def basic_title_with_genre(options: str):
+    print(options.find(","))
+    if options.find(",") == -1:
+        option = options
+        return f"""SELECT * FROM "Basic" B WHERE '{option}' = ANY (b.genres);
+        """
+    else:
+        options = options.split(",")
+        for index, option in enumerate(options):
+            options[index] = option.strip()
+        base = """SELECT * FROM "Basic" B WHERE """
+        for i in range(len(options) - 1):
+            base += f"""'{options[i]}' = ANY (B.genres) AND """
+        base += f"""'{options[len(options) - 1]}' = ANY (B.genres);"""
+        return base
+
 def basic_title_by_director(director: str):
     return f"""
     SELECT DISTINCT * FROM "Basic" b WHERE b.tconst IN 

@@ -1,12 +1,15 @@
 create table if not exists public."Basic"
 (
-    tconst          varchar(9)   not null,
-    title_type      text         not null,
-    original_title  varchar(256) not null,
-    promotion_title varchar(256) not null,
-    is_adult        boolean      not null,
-    start_year      smallint     not null,
-    end_year        smallint
+    tconst          varchar(9)                   not null,
+    title_type      text                         not null,
+    original_title  varchar(256)                 not null,
+    promotion_title varchar(256)                 not null,
+    is_adult        boolean                      not null,
+    start_year      smallint                     not null,
+    end_year        smallint,
+    genres          "Genres"[]       default ARRAY ['NOTA'::"Genres"],
+    rating          double precision default 6.9 not null,
+    image_link      text
 );
 
 alter table public."Basic"
@@ -182,5 +185,4 @@ grant delete, insert, references, select, trigger, truncate, update on public."A
 grant delete, insert, references, select, trigger, truncate, update on public."Akas" to authenticated;
 
 grant delete, insert, references, select, trigger, truncate, update on public."Akas" to service_role;
-
 
