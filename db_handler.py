@@ -39,3 +39,7 @@ def run_select_query(query: str):
         cur.execute(query)
         result = cur.fetchall()
     return result
+
+
+def run_update_query(query: str):
+    pass

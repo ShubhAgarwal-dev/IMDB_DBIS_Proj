@@ -7,6 +7,7 @@ import Queries
 import db_handler
 import docs
 import helper
+import pw_handler
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
@@ -32,6 +33,7 @@ app.add_middleware(
 async def app_startup():
     logging.debug("APP STARTUP EVENT(S) STARTED")
     db_handler.connect_to_db()
+    pw_handler.make_salter()
 
 
 @app.on_event("shutdown")
