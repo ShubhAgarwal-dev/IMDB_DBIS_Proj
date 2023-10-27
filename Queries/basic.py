@@ -1,6 +1,9 @@
 def basic_query():
     return """SELECT DISTINCT * FROM "Basic" b;"""
 
+def basic_movie_data(t_const: str):
+    return f"""SELECT * FROM "Basic" b WHERE 
+        b.tconst = '{t_const}';"""
 
 def basic_title_by_name(sub_string: str):
     return f""" SELECT DISTINCT * from "Basic" b WHERE 

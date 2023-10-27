@@ -145,7 +145,7 @@ async def advanced_search(params: helper.SearchParams, adult: bool, response: Re
 @app.get("/actors")
 async def get_actors_for_title(tconst: str, response: Response):
     if not helper.tconst_exists_in_relation("Linker", tconst):
-        response.status_code = status.HTTP_404_NOT_FOUND
+        response.status_code = status.HTTP_204_NO_CONTENT
         return
     query = Queries.actors.get_actors_for_titles(tconst)
     response.status_code = status.HTTP_200_OK
@@ -155,14 +155,38 @@ async def get_actors_for_title(tconst: str, response: Response):
 @app.get("/directors")
 async def get_directors_for_title(tconst: str, response: Response):
     if not helper.tconst_exists_in_relation("Director", tconst):
-        response.status_code = status.HTTP_404_NOT_FOUND
+        response.status_code = status.HTTP_204_NO_CONTENT
         return
     query = Queries.directors.get_directors_for_title(tconst)
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
+
+@app.get("/title/id")
+async def get_movie_by_title(tconst:str, response: Response):
+    if not helper.tconst_exists_in_relation("Basic",tconst):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
+    query = Queries.basic.basic_movie_data(tconst)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query,True)
 
 @app.get("/allPeople", tags=["Person"])
 async def get_people(response: Response):
     query = Queries.persons.person_query()
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
+
+@app.get("/titles/diretor_id")
+async def get_movie_director(director_id: str,resposne: Response):
+    query = Queries.directors.get_titles_for_director(director_id)
+    resposne.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query,True)
+    
+@app.get("/person/titles", tags=["Person"])
+async def get_person_movies(nconst:str, adult:bool, response:Response):
+    query = Queries.persons.person_all_movie_query(nconst)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query,adult)
+
+@app.get("/person/details",tags=["Person"])
+async def get_
