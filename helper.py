@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from db_handler import run_select_query
 
+
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
 
@@ -154,3 +155,15 @@ def tconst_exists_in_relation(relation: str, tconst: str) -> bool:
     logging.debug(bool(res))
     logging.debug(res)
     return bool(res)
+
+def parse_query_results(results):
+    return [{"title": row[0], "director": row[1], "writer": row[2], "actor": row[3]} for row in results]
+
+def add_movie_to_database(title, director, writer, actor):
+    try:
+        query = f"INSERT INTO Movies (Title, Director, Writer, Actor) VALUES ('{title}', '{director}', '{writer}', '{actor}');"
+        run_select_query(query)
+        return True
+    except Exception as e:
+        print(f"Failed to add data: {e}")
+        return False

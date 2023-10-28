@@ -158,3 +158,30 @@ async def get_directors_for_title(tconst: str, response: Response):
     query = Queries.directors.get_directors_for_title(tconst)
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
+
+@app.get("/movies/by_director")
+async def movies_by_director(director: str):
+    results = Queries.Shivesh.get_movies_by_director(director)
+    return helper.parse_query_results(results)
+
+@app.get("/movies/by_writer")
+async def movies_by_writer(writer: str):
+    results = Queries.Shivesh.get_movies_by_writer(writer)
+    return helper.parse_query_results(results)
+
+@app.get("/movie/actor_role")
+async def actor_role_in_movie(actor: str):
+    results = Queries.Shivesh.get_actor_role_in_movie(actor)
+    return helper.parse_query_results(results)
+
+@app.post("/add_movie")
+async def add_movie(title: str, director: str, writer: str, actor: str):
+    success = helper.add_movie_to_database(title, director, writer, actor)
+    if success:
+        return {"message": "Movie added successfully"}
+    else:
+        return {"message": "Failed to add movie"}
+
+
+
+
