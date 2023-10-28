@@ -71,3 +71,4 @@ def basic_title_by_person(name: str):
                             JOIN "Person" P on P.nconst = L.nconst
                    WHERE P.name LIKE '%{name}%')
     """
+

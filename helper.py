@@ -154,3 +154,22 @@ def tconst_exists_in_relation(relation: str, tconst: str) -> bool:
     logging.debug(bool(res))
     logging.debug(res)
     return bool(res)
+
+
+
+
+
+
+
+
+
+
+
+def delete_movie_from_database(tconst):
+    try:
+        query = f"DELETE FROM Movies WHERE Title = '{tconst}';"
+        run_delete_query(query)  # You should have a function for executing delete queries.
+        return True
+    except Exception as e:
+        print(f"Failed to delete data: {e}")
+        return False

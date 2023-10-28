@@ -9,3 +9,14 @@ def person_all_movie_query(nconst: str):
 def person_detail_query(nconst: str):
     return f"""SELECT * FROM "Person" p
             WHERE p.nconst='{nconst}';"""
+    
+    
+    
+    
+    
+    
+    
+            
+def person_detail_query_by_name(nconst: str):
+    return f"""SELECT * FROM "Person" p
+            WHERE p.nconst LIKE '%{nconst}%';"""

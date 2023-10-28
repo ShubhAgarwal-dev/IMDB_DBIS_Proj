@@ -190,3 +190,24 @@ async def get_person_movies(nconst:str, adult:bool, response:Response):
 
 @app.get("/person/details",tags=["Person"])
 async def get_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@app.post("/delete_movie")
+async def del_movie(title: str):
+    success = helper.delete_movie_from_database(title)
+    if success:
+        return {"message": "Movie deleted successfully"}
+    else:
+        return {"message": "Failed to delete movie"}    
