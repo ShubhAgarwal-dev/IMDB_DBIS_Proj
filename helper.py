@@ -128,7 +128,7 @@ def basic_sort_param_checker(param: str) -> bool:
 
 
 def basic_search_param_checker(param: str) -> bool:
-    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "genres", "rating"}
+    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "genres", "rating","title_type"}
     print(param)
     if param not in valid_params:
         return False

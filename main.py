@@ -61,7 +61,7 @@ async def get_titles(adult: bool = True):
 @app.get("/titles/other_names")
 async def get_additional_titles(tconst: str, response: Response):
     if not helper.tconst_exists_in_relation("Akas", tconst):
-        response.status_code = status.HTTP_404_NOT_FOUND
+        response.status_code = status.HTTP_204_NO_CONTENT
         return
     query = Queries.akas.akas_titles_by_tconst(tconst)
     response.status_code = status.HTTP_200_OK
@@ -189,4 +189,11 @@ async def get_person_movies(nconst:str, adult:bool, response:Response):
     return helper.parse_basic(query,adult)
 
 @app.get("/person/details",tags=["Person"])
-async def get_
+async def get_person_details(nconst:str,response:Response):
+    query = Queries.persons.person_detail_query(nconst)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_person(query)
+
+# @app.get("/findAll",tags=["Complete Lookup"])
+# async def complete_lookup(search_text:str, response:Response):
+    
