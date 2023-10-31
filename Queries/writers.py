@@ -1,7 +1,8 @@
-def basic_title_by_writers(writer: str):
-    return f"""
-    SELECT DISTINCT * FROM "Basic" b WHERE b.tconst IN 
-    (SELECT w.tconst FROM "Writer" w 
-    JOIN "Person" P ON w.nconst = P.nconst 
-    WHERE P.name LIKE '%{writer}%' );
-    """
+def adv_writer_query(writer_name):
+    writer_name = writer_name.split(",")
+    total_queries = []
+    for writer in writer_name:
+        total_queries.append(
+            f"""SELECT L.tconst FROM "Writer" L JOIN "Person" P on L.nconst = P.nconst WHERE name LIKE '%{writer}%'""")
+    # total_queries[-1] = total_queries[-1] + ';'
+    return " INTERSECT ".join(total_queries)

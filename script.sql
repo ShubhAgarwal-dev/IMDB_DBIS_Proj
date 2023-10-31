@@ -1,25 +1,21 @@
 create table if not exists public."Basic"
 (
-    tconst          varchar(9)                   not null,
-    title_type      text                         not null,
-    original_title  varchar(256)                 not null,
-    promotion_title varchar(256)                 not null,
-    is_adult        boolean                      not null,
-    start_year      smallint                     not null,
+    tconst          varchar(9)                    not null,
+    title_type      text                          not null,
+    original_title  varchar(256)                  not null,
+    promotion_title varchar(256)                  not null,
+    is_adult        boolean                       not null,
+    start_year      smallint                      not null,
     end_year        smallint,
     genres          "Genres"[]       default ARRAY ['NOTA'::"Genres"],
-    rating          double precision default 6.9 not null,
-    image_link      text
+    rating          double precision default 6.9  not null,
+    image_link      text,
+    urating         double precision default 7.00 not null
 );
 
 alter table public."Basic"
-    add primary key (tconst);
-
-grant delete, insert, references, select, trigger, truncate, update on public."Basic" to anon;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Basic" to authenticated;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Basic" to service_role;
+    add constraint "Basic_pkey"
+        primary key (tconst);
 
 create table if not exists public."Person"
 (
@@ -31,13 +27,8 @@ create table if not exists public."Person"
 );
 
 alter table public."Person"
-    add primary key (nconst);
-
-grant delete, insert, references, select, trigger, truncate, update on public."Person" to anon;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Person" to authenticated;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Person" to service_role;
+    add constraint "Person_pkey"
+        primary key (nconst);
 
 create table if not exists public."Linker"
 (
@@ -47,21 +38,18 @@ create table if not exists public."Linker"
 );
 
 alter table public."Linker"
-    add primary key (nconst, tconst);
+    add constraint "Linker_pkey"
+        primary key (nconst, tconst);
 
 alter table public."Linker"
-    add foreign key (nconst) references public."Person"
-        on update cascade on delete restrict;
+    add constraint "Linker_nconst_fkey"
+        foreign key (nconst) references public."Person"
+            on update cascade on delete restrict;
 
 alter table public."Linker"
-    add foreign key (tconst) references public."Basic"
-        on update cascade on delete restrict;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Linker" to anon;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Linker" to authenticated;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Linker" to service_role;
+    add constraint "Linker_tconst_fkey"
+        foreign key (tconst) references public."Basic"
+            on update cascade on delete restrict;
 
 create table if not exists public."Principal"
 (
@@ -74,21 +62,18 @@ create table if not exists public."Principal"
 );
 
 alter table public."Principal"
-    add primary key (tconst, ordering);
+    add constraint "Principal_pkey"
+        primary key (tconst, ordering);
 
 alter table public."Principal"
-    add foreign key (tconst) references public."Basic"
-        on update cascade on delete restrict;
+    add constraint "Principal_tconst_fkey"
+        foreign key (tconst) references public."Basic"
+            on update cascade on delete restrict;
 
 alter table public."Principal"
-    add foreign key (nconst) references public."Person"
-        on update cascade on delete restrict;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Principal" to anon;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Principal" to authenticated;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Principal" to service_role;
+    add constraint "Principal_nconst_fkey"
+        foreign key (nconst) references public."Person"
+            on update cascade on delete restrict;
 
 create table if not exists public."Director"
 (
@@ -97,21 +82,18 @@ create table if not exists public."Director"
 );
 
 alter table public."Director"
-    add primary key (tconst, nconst);
+    add constraint "Director_pkey"
+        primary key (tconst, nconst);
 
 alter table public."Director"
-    add foreign key (tconst) references public."Basic"
-        on update cascade on delete restrict;
+    add constraint "Director_tconst_fkey"
+        foreign key (tconst) references public."Basic"
+            on update cascade on delete restrict;
 
 alter table public."Director"
-    add foreign key (nconst) references public."Person"
-        on update cascade on delete restrict;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Director" to anon;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Director" to authenticated;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Director" to service_role;
+    add constraint "Director_nconst_fkey"
+        foreign key (nconst) references public."Person"
+            on update cascade on delete restrict;
 
 create table if not exists public."Writer"
 (
@@ -120,21 +102,18 @@ create table if not exists public."Writer"
 );
 
 alter table public."Writer"
-    add primary key (tconst, nconst);
+    add constraint "Writer_pkey"
+        primary key (tconst, nconst);
 
 alter table public."Writer"
-    add foreign key (tconst) references public."Basic"
-        on update cascade on delete restrict;
+    add constraint "Writer_tconst_fkey"
+        foreign key (tconst) references public."Basic"
+            on update cascade on delete restrict;
 
 alter table public."Writer"
-    add foreign key (nconst) references public."Person"
-        on update cascade on delete restrict;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Writer" to anon;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Writer" to authenticated;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Writer" to service_role;
+    add constraint "Writer_nconst_fkey"
+        foreign key (nconst) references public."Person"
+            on update cascade on delete restrict;
 
 create table if not exists public."Episode"
 (
@@ -145,21 +124,18 @@ create table if not exists public."Episode"
 );
 
 alter table public."Episode"
-    add primary key (tconst);
+    add constraint "Episode_pkey"
+        primary key (tconst);
 
 alter table public."Episode"
-    add foreign key (tconst) references public."Basic"
-        on update cascade on delete restrict;
+    add constraint "Episode_tconst_fkey"
+        foreign key (tconst) references public."Basic"
+            on update cascade on delete restrict;
 
 alter table public."Episode"
-    add foreign key (parent_tconst) references public."Basic"
-        on update cascade on delete restrict;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Episode" to anon;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Episode" to authenticated;
-
-grant delete, insert, references, select, trigger, truncate, update on public."Episode" to service_role;
+    add constraint "Episode_parent_tconst_fkey"
+        foreign key (parent_tconst) references public."Basic"
+            on update cascade on delete restrict;
 
 create table if not exists public."Akas"
 (
@@ -174,15 +150,51 @@ create table if not exists public."Akas"
 );
 
 alter table public."Akas"
-    add primary key (tconst, ordering);
+    add constraint "Akas_pkey"
+        primary key (tconst, ordering);
 
 alter table public."Akas"
-    add foreign key (tconst) references public."Basic"
-        on update cascade on delete restrict;
+    add constraint "Akas_tconst_fkey"
+        foreign key (tconst) references public."Basic"
+            on update cascade on delete restrict;
 
-grant delete, insert, references, select, trigger, truncate, update on public."Akas" to anon;
+create table if not exists public."User"
+(
+    uconst   text default gen_random_uuid() not null,
+    password varchar(97)                    not null,
+    username text
+);
 
-grant delete, insert, references, select, trigger, truncate, update on public."Akas" to authenticated;
+alter table public."User"
+    add constraint "User_pkey"
+        primary key (uconst);
 
-grant delete, insert, references, select, trigger, truncate, update on public."Akas" to service_role;
+alter table public."User"
+    add constraint uname
+        unique (username);
+
+create table if not exists public."Rating"
+(
+    uconst text             not null,
+    tconst varchar(9)       not null,
+    rating double precision not null,
+    review text
+);
+
+create index if not exists "Rating_tconst_idx"
+    on public."Rating" (tconst);
+
+alter table public."Rating"
+    add constraint "Rating_pkey"
+        primary key (uconst, tconst);
+
+alter table public."Rating"
+    add constraint "Rating_tconst_fkey"
+        foreign key (tconst) references public."Basic"
+            on update cascade on delete restrict;
+
+alter table public."Rating"
+    add constraint "Rating_uconst_fkey"
+        foreign key (uconst) references public."User"
+            on update cascade on delete restrict;
 

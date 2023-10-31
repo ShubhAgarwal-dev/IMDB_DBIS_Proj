@@ -2,6 +2,11 @@ def basic_query():
     return """SELECT DISTINCT * FROM "Basic" b;"""
 
 
+def basic_movie_data(t_const: str):
+    return f"""SELECT * FROM "Basic" b WHERE 
+        b.tconst = '{t_const}';"""
+
+
 def basic_title_by_name(sub_string: str):
     return f""" SELECT DISTINCT * from "Basic" b WHERE 
         b.original_title LIKE '%{sub_string}%' OR 
@@ -16,7 +21,7 @@ def basic_title_order_by_params(param: str):
 
 def basic_title_filter_by_param_val(param: str, val: str):
     if param == "genres":
-        val = "{"+ val + "}"
+        val = "{" + val + "}"
         return f"""
         SELECT DISTINCT * FROM "Basic" B WHERE B.{param} = '{val}';
         """
@@ -40,6 +45,7 @@ def basic_title_with_genre(options: str):
             base += f"""'{options[i]}' = ANY (B.genres) AND """
         base += f"""'{options[len(options) - 1]}' = ANY (B.genres);"""
         return base
+
 
 def basic_title_by_director(director: str):
     return f"""
@@ -68,3 +74,62 @@ def basic_title_by_person(name: str):
                             JOIN "Person" P on P.nconst = L.nconst
                    WHERE P.name LIKE '%{name}%')
     """
+
+
+def update_urating(tconst, new_rating):
+    return f"""
+    UPDATE "Basic" SET urating={new_rating}  WHERE tconst='{tconst}';
+    """
+
+
+def get_urating(tconst):
+    return f"""
+    SELECT urating FROM "Basic" WHERE tconst='{tconst}';
+    """
+
+def get_tv_shows_by_title(title):
+    return f"""
+    SELECT * from "Basic" 
+    WHERE tconst in (
+        SELECT tconst from "Basic" b WHERE b.title_type = 'television'
+    )
+    AND original_title LIKE '%{title}%';
+    """
+    
+def get_tv_shows_by_rel_year(start_year):
+    return f"""
+    SELECT * from "Basic" 
+    WHERE tconst in (
+        SELECT tconst from "Basic" b WHERE b.title_type = 'television'
+    )
+    AND start_year = {start_year};
+    """
+    
+def get_tv_shows_by_end_year(end_year):
+    return f"""
+    SELECT * from "Basic" 
+    WHERE tconst in (
+        SELECT tconst from "Basic" b WHERE b.title_type = 'television'
+    )
+    AND end_year = {end_year};
+    """
+    
+def get_tv_shows_by_genre(option):
+    print(options.find(","))
+    if options.find(",") == -1:
+        option = options
+        return f"""SELECT * FROM "Basic" B WHERE B.tconst IN (
+               SELECT tconst from "Basic" b WHERE b.title_type = 'television' 
+        ) AND '{option}' = ANY (b.genres);
+        """
+    else:
+        options = options.split(",")
+        for index, option in enumerate(options):
+            options[index] = option.strip()
+        base = """SELECT * FROM "Basic" B WHERE B.tconst IN (
+               SELECT tconst from "Basic" b WHERE b.title_type = 'television' 
+        )"""
+        for i in range(len(options) - 1):
+            base += f"""'{options[i]}' = ANY (B.genres) AND """
+        base += f"""'{options[len(options) - 1]}' = ANY (B.genres);"""
+        return base

@@ -1,6 +1,8 @@
 description = """
-    **DBIS Lab project** || **IMDB Clone** || **Backend**
-    Developed by a group of four students:
+**DBIS Lab project || IMDB Clone || Backend**
+
+Developed by a group of four students:
+    
     - Shubh Agarwal(210020047)
     - Saksham Chhimwal(210010046)
     - Shivesh Pandey(2100200044)
@@ -20,5 +22,9 @@ tags_metadata = [
         - start_year
         - end_data
         """
+    },
+    {
+        "name": "Person",
+        "description": "A json is returned"
     }
 ]
