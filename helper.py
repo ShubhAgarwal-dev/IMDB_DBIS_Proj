@@ -159,6 +159,10 @@ def basic_search_param_checker(param: str) -> bool:
     return True
 
 
+def parse_bool_for_sql(val: bool) -> str:
+    return 'true' if val else 'false'
+
+
 def query_builder(params: SearchParams):
     all_queries = []
     if params.actor_name:
@@ -178,10 +182,12 @@ def query_builder(params: SearchParams):
     if params.urating:
         all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.urating >= {params.urating}""")
     if params.title:
+        base_query = f"""SELECT DISTINCT tconst FROM "Akas" WHERE local_title LIKE '%{params.title}%'"""
         if params.language:
-            pass
+            base_query = base_query + f""" AND language LIKE '%{params.language}%'"""
         if params.is_original_title:
-            pass
+            base_query = base_query + f""" AND is_original_title={parse_bool_for_sql(params.is_original_title)}"""
+        all_queries.append(base_query)
     if not all_queries:
         # No parameter supplied
         return """SELECT * FROM "Basic";"""
