@@ -62,7 +62,7 @@ async def get_titles(adult: bool = True):
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/other_names")
+@app.get("/titles/other_names", tags=["Basic"])
 async def get_additional_titles(tconst: str, response: Response):
     if not helper.tconst_exists_in_relation("Akas", tconst):
         response.status_code = status.HTTP_204_NO_CONTENT
@@ -72,7 +72,7 @@ async def get_additional_titles(tconst: str, response: Response):
     return helper.parse_akas(query)
 
 
-@app.get("/titles/name")
+@app.get("/titles/name", tags=["Basic"])
 async def get_title_by_name(sub_string: str, adult: bool, response: Response):
     if not sub_string:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -82,7 +82,7 @@ async def get_title_by_name(sub_string: str, adult: bool, response: Response):
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/order")
+@app.get("/titles/order", tags=["Basic"])
 async def order_titles_by(param: str, adult: bool, response: Response):
     if not helper.basic_sort_param_checker(param):
         response.status_code = status.HTTP_204_NO_CONTENT
@@ -92,7 +92,7 @@ async def order_titles_by(param: str, adult: bool, response: Response):
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/search")
+@app.get("/titles/search", tags=["Basic"])
 async def basic_search(param: str, val: str, adult: bool, response: Response):
     logging.debug(param)
     logging.debug(val)
@@ -106,42 +106,42 @@ async def basic_search(param: str, val: str, adult: bool, response: Response):
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/director")
+@app.get("/titles/director", tags=["Basic"])
 async def title_by_director(director: str, adult: bool, response: Response):
     query = Queries.basic.basic_title_by_director(director)
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/writer")
+@app.get("/titles/writer", tags=["Basic"])
 async def title_by_writer(writer: str, adult: bool, response: Response):
     query = Queries.basic.basic_title_by_writers(writer)
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/person")
+@app.get("/titles/person", tags=["Basic"])
 async def title_by_person(name: str, adult: bool, response: Response):
     query = Queries.basic.basic_title_by_person(name)
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
 
-@app.get("/titles/genres")
+@app.get("/titles/genres", tags=["Basic"])
 async def title_by_genres(gen_list: str, adult: bool, response: Response):
     query = Queries.basic.basic_title_with_genre(gen_list)
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
 
-@app.post("/titles/advSearch")
+@app.post("/titles/advSearch", tags=["Basic"])
 async def advanced_search(params: helper.SearchParams, adult: bool, response: Response):
     query = helper.query_builder(params)
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
 
-@app.get("/actors")
+@app.get("/actors", tags=["Person"])
 async def get_actors_for_title(tconst: str, response: Response):
     if not helper.tconst_exists_in_relation("Linker", tconst):
         response.status_code = status.HTTP_204_NO_CONTENT
@@ -151,7 +151,7 @@ async def get_actors_for_title(tconst: str, response: Response):
     return helper.parse_person(query)
 
 
-@app.get("/directors")
+@app.get("/directors", tags=["Person"])
 async def get_directors_for_title(tconst: str, response: Response):
     if not helper.tconst_exists_in_relation("Director", tconst):
         response.status_code = status.HTTP_204_NO_CONTENT
@@ -161,7 +161,7 @@ async def get_directors_for_title(tconst: str, response: Response):
     return helper.parse_person(query)
 
 
-@app.get("/title/id")
+@app.get("/title/id", tags=["Basic"])
 async def get_movie_by_title(tconst: str, response: Response):
     if not helper.tconst_exists_in_relation("Basic", tconst):
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -178,7 +178,7 @@ async def get_people(response: Response):
     return helper.parse_person(query)
 
 
-@app.get("/titles/director_id")
+@app.get("/titles/director_id", tags=["Basic"])
 async def get_movie_director(director_id: str, response: Response):
     query = Queries.directors.get_titles_for_director(director_id)
     response.status_code = status.HTTP_200_OK
@@ -199,7 +199,7 @@ async def get_person_details(nconst: str, response: Response):
     return helper.parse_person(query)
 
 
-@app.post("/user/rate", tags=["user"])
+@app.post("/user/rate", tags=["User"])
 async def rate_title(credentials: helper.Credentials, tconst: str, rating: float, review: Union[str, None],
                      response: Response):
     if not (uconst := helper.check_user_exists(credentials.username)):
@@ -221,7 +221,7 @@ async def rate_title(credentials: helper.Credentials, tconst: str, rating: float
     return
 
 
-@app.post("/user/signup", tags=["user"])
+@app.post("/user/signup", tags=["User"])
 async def add_user(credentials: helper.Credentials, response: Response):
     if helper.check_user_exists(credentials.username):
         response.status_code = status.HTTP_409_CONFLICT
@@ -231,7 +231,7 @@ async def add_user(credentials: helper.Credentials, response: Response):
     return
 
 
-@app.get("/user/titles/{username}", tags=["user"])
+@app.get("/user/titles/{username}", tags=["User"])
 async def get_title(username: str, response: Response):
     if not (uconst := helper.check_user_exists(username)):
         response.status_code = status.HTTP_403_FORBIDDEN
@@ -239,7 +239,7 @@ async def get_title(username: str, response: Response):
     return helper.parse_rating(Queries.rating.get_titles(uconst[0]))
 
 
-@app.post("/user/signin", tags=["user", "auth"])
+@app.post("/user/signin", tags=["User", "Auth"])
 async def signin(credentials: helper.Credentials, response: Response):
     if not (uconst := helper.check_user_exists(credentials.username)):
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -255,7 +255,7 @@ async def signin(credentials: helper.Credentials, response: Response):
     }
 
 
-@app.get("/user/rated titles", tags=["user", "auth"])
+@app.get("/user/rated titles", tags=["user", "Auth"])
 async def get_titles():
     return {
         "status": "Work in progress."
@@ -290,7 +290,7 @@ async def get_tv_shows_by_genre(gen_list: str, adult: bool, response: Response):
     return helper.parse_basic(query, adult)
 
 
-@app.get("/title/episodes", tags=["episodes"])
+@app.get("/title/episodes", tags=["Episodes"])
 async def get_episodes(response: Response):
     response.status_code = status.HTTP_200_OK
     return helper.get_all_episodes_mapping()
