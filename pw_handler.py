@@ -1,13 +1,9 @@
+import logging
+
 import argon2
-import jose
-import os
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
-REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
-ALGORITHM = "HS256"
-JWT_SECRET_KEY = os.environ['JWT_SECRET_KEY']     # should be kept secret
-JWT_REFRESH_SECRET_KEY = os.environ['JWT_REFRESH_SECRET_KEY']      # should be kept secret
-
+logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
+                    level=logging.DEBUG)
 
 pwh: argon2.PasswordHasher
 CONSTS = ['', 'argon2id', 'v=19', 'm=102400,t=2,p=8', '']
@@ -25,10 +21,12 @@ def hash_password(password: str) -> str:
 
 def sql_encoding(hashed_password: str):
     fragments = hashed_password.split("$")
+    logging.debug(fragments[-2].encode('utf-8').hex() + fragments[-1].encode('utf-8').hex())
     return fragments[-2].encode('utf-8').hex() + fragments[-1].encode('utf-8').hex()
 
 
 def compare(password: str, hashed_password: str) -> bool:
+    logging.debug(f"password is {password} with hashed being {hashed_password}")
     try:
         pwh.verify(hashed_password, password)
         return True

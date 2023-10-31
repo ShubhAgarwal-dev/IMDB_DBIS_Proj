@@ -28,7 +28,6 @@ DATABASE_USER=postgres
 DATABASE_PASSWORD=<anything>
 DATABASE_PORT=5432
 JWT_SECRET_KEY=<secretkey>
-JWT_REFRESH_SECRET_KEY=<secretkey>
 ```
 
 Now use the sql commands written in [`script.sql`](./script.sql) to replicate our imdb schema. You can also use the

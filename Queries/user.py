@@ -1,9 +1,15 @@
+import logging
+
 import db_handler
 import pw_handler
+
+logging.basicConfig(filename='logs/hash.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
+                    level=logging.DEBUG)
 
 
 def add_user(uname: str, password: str):
     hashed_password = pw_handler.hash_password(password)
+    logging.debug(f"Hashed password is {hashed_password}")
     sql_compatible = pw_handler.sql_encoding(hashed_password)
     query = f"""
     INSERT INTO "User" (password, username) VALUES ('{sql_compatible}', '{uname}');

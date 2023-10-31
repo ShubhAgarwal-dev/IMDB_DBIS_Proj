@@ -10,6 +10,7 @@ import db_handler
 import docs
 import helper
 import pw_handler
+from auth_util import create_access_token, jwt_initialization
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
@@ -36,6 +37,7 @@ async def app_startup():
     load_dotenv()
     db_handler.connect_to_db()
     pw_handler.make_salter()
+    jwt_initialization()
 
 
 @app.on_event("shutdown")
@@ -240,3 +242,19 @@ async def get_title(username: str, response: Response):
         response.status_code = status.HTTP_403_FORBIDDEN
         return
     return helper.parse_rating(Queries.rating.get_titles(uconst[0]))
+
+
+@app.post("/user/signin")
+async def signin(credentials: helper.Credentials, response: Response):
+    if not (uconst := helper.check_user_exists(credentials.username)):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
+    logging.debug(uconst)
+    if not Queries.user.check_if_pwd_correct(credentials.username, credentials.password):
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
+    response.status_code = status.HTTP_200_OK
+    logging.debug(f"UCONST is {uconst[0]}")
+    return {
+        "access_token": create_access_token(uconst[0].encode('utf-8'))
+    }
