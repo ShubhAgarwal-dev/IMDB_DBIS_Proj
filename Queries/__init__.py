@@ -5,3 +5,4 @@ import Queries.directors
 import Queries.persons
 import Queries.writers
 import Queries.user
+import Queries.rating

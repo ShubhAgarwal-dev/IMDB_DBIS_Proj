@@ -120,6 +120,21 @@ def parse_person(query: str):
     return result
 
 
+def parse_rating(query: str):
+    res = run_select_query(query)
+    result = {
+        "rating": [],
+        "status": 200
+    }
+    for i in res:
+        result["rating"].append({
+            "tconst": i[0],
+            "rating": i[1],
+            "review": i[2]
+        })
+    return result
+
+
 def basic_sort_param_checker(param: str) -> bool:
     param_list = [param]
     if "," in param:

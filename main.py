@@ -211,10 +211,10 @@ async def rate_title(credentials: helper.Credentials, tconst: str, rating: float
         return
     if res := helper.has_user_rated_movie(credentials.username, tconst):
         *_, old_rating, review = res
-        Queries.user.update_rating(credentials.username, tconst, rating)
+        Queries.rating.update_rating(credentials.username, tconst, rating)
         rating = rating - old_rating
     else:
-        Queries.user.insert_rating(uconst, tconst, rating, review)
+        Queries.rating.insert_rating(uconst[0], tconst, rating, review)
     old_movie_rating = db_handler.run_select_query(Queries.basic.get_urating(tconst))[0][0]
     db_handler.run_insert_or_update_query(
         Queries.basic.update_urating(tconst, helper.calculate_rating(old_movie_rating, rating)))
@@ -230,3 +230,11 @@ async def add_user(credentials: helper.Credentials, response: Response):
     Queries.user.add_user(credentials.username, credentials.password)
     response.status_code = status.HTTP_200_OK
     return
+
+
+@app.get("/user/titles/{username}")
+async def get_title(username: str, response: Response):
+    if not (uconst := helper.check_user_exists(username)):
+        response.status_code = status.HTTP_403_FORBIDDEN
+        return
+    return helper.parse_rating(Queries.rating.get_titles(uconst[0]))
