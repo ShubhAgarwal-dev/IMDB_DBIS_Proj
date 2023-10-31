@@ -18,4 +18,3 @@ def check_if_pwd_correct(uname: str, password: str):
     pwd = db_handler.run_select_query(query)[0][0]
     decoded_pwd = pw_handler.decode_sql_pwd(pwd)
     return pw_handler.compare(password, decoded_pwd)
-

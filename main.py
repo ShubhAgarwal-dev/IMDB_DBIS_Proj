@@ -1,6 +1,7 @@
 import logging
 from typing import Union
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -32,6 +33,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def app_startup():
     logging.debug("APP STARTUP EVENT(S) STARTED")
+    load_dotenv()
     db_handler.connect_to_db()
     pw_handler.make_salter()
 
@@ -222,7 +224,7 @@ async def rate_title(credentials: helper.Credentials, tconst: str, rating: float
     return
 
 
-@app.post("/user/add")
+@app.post("/user/signup")
 async def add_user(credentials: helper.Credentials, response: Response):
     if helper.check_user_exists(credentials.username):
         response.status_code = status.HTTP_409_CONFLICT

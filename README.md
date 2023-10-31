@@ -27,9 +27,12 @@ DATABASE_HOST=localhost
 DATABASE_USER=postgres
 DATABASE_PASSWORD=<anything>
 DATABASE_PORT=5432
+JWT_SECRET_KEY=<secretkey>
+JWT_REFRESH_SECRET_KEY=<secretkey>
 ```
 
 Now use the sql commands written in [`script.sql`](./script.sql) to replicate our imdb schema. You can also use the
 [`dummydata.sql`](./tests/dummydata.sql) to fill in some dummy data to perform some tests, or you can head to
 [datasets.imdbws.com](https://datasets.imdbws.com/) to fill in your database, but still you will have to fill in some
-extra attributes like rating, genres, image_link in `Basic` yourself with help of some randomizer.
+extra attributes like rating, genres, image_link in `Basic` yourself with help of some randomizer. You can
+use [grc.com/passwords](https://www.grc.com/passwords.htm) to generate secret tokens.

@@ -196,4 +196,4 @@ def has_user_rated_movie(uname: str, tconst: str) -> Union[Tuple[str], bool]:
 
 
 def calculate_rating(old_rating, new_rating):
-    return old_rating + (new_rating - old_rating)/2**14
+    return old_rating + (new_rating - old_rating) / 2 ** 14
