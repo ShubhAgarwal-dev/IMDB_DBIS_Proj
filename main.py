@@ -136,12 +136,6 @@ async def title_by_genres(gen_list: str, adult: bool, response: Response):
 
 @app.post("/titles/advSearch")
 async def advanced_search(params: helper.SearchParams, adult: bool, response: Response):
-    if not helper.advanced_param_validator(params):
-        response.status_code = status.HTTP_204_NO_CONTENT
-        return {"message": "send parameter correctly"}
-    query = """SELECT * FROM "Basic" b;"""
-    if params.num_params == 1:
-        return helper.parse_basic(query, adult)
     response.status_code = status.HTTP_200_OK
     return {"message": "Implementation in progress"}
 
@@ -183,7 +177,7 @@ async def get_people(response: Response):
     return helper.parse_person(query)
 
 
-@app.get("/titles/diretor_id")
+@app.get("/titles/director_id")
 async def get_movie_director(director_id: str, response: Response):
     query = Queries.directors.get_titles_for_director(director_id)
     response.status_code = status.HTTP_200_OK
@@ -257,4 +251,11 @@ async def signin(credentials: helper.Credentials, response: Response):
     logging.debug(f"UCONST is {uconst[0]}")
     return {
         "access_token": create_access_token(uconst[0].encode('utf-8'))
+    }
+
+
+@app.get("/user/rated titles")
+async def get_titles():
+    return {
+        "status": "Work in progress."
     }

@@ -1,9 +1,10 @@
 import logging
 from enum import Enum
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 from pydantic import BaseModel
 
+import Queries.persons
 from db_handler import run_select_query
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
@@ -43,14 +44,16 @@ class SearchParams(BaseModel):
     actor_name: Union[str, None] = None
     director_name: Union[str, None] = None
     writer_name: Union[str, None] = None
-    start_year: Union[str, int, None] = None
-    end_year: Union[str, int, None] = None
-    title: Union[str, None] = None
+    person_name: Union[str, None] = None
+    start_year: Union[int, None] = None
+    end_year: Union[int, None] = None
+    title: Union[str, None] = None  # FOR AKAS
     language: Union[str, None] = None
     is_original_title: Union[bool, None] = None
     attributes: Union[TitleTypes, None] = None
-    rating: Union[float, str, None] = None
-    genres: Union[Genres, None] = None
+    rating: Union[float, None] = None
+    urating: Union[float, None]
+    genres: Union[List[Genres], None] = None
     num_params: Union[int, None] = 0
 
 
@@ -155,11 +158,26 @@ def basic_search_param_checker(param: str) -> bool:
     return True
 
 
-def advanced_param_validator(param: SearchParams) -> bool:
-    if param.num_params == 0:
-        return True
-    elif param.num_params == 1:
-        return False
+def query_builder(params: SearchParams):
+    all_queries = []
+    if params.actor_name:
+        all_queries.append(Queries.actors.adv_actor_query(params.actor_name))
+    if params.person_name:
+        all_queries.append(Queries.persons.adv_person_query(params.person_name))
+    if params.director_name:
+        all_queries.append(Queries.directors.adv_director_query(params.director_name))
+    if params.writer_name:
+        all_queries.append(Queries.writers.adv_writer_query(params.writer_name))
+    if params.start_year:
+        all_queries.append(f"""SELECT * FROM "Basic" B WHERE B.start_year >= {params.start_year}""")
+    if params.end_year:
+        all_queries.append(f"""SELECT * FROM "Basic" B WHERE B.end_year <= {params.start_year}""")
+    if not all_queries:
+        # No parameter supplied
+        return """SELECT * FROM "Basic";"""
+    else:
+        all_queries[-1] = all_queries[-1] + ';'
+        return " INTERSECT ".join(all_queries)
 
 
 relations_with_tconst = {"Basic", "Akas", "Director", "Episode", "Linker", "Principal", "Writer"}
