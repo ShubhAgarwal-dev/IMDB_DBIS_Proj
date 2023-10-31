@@ -6,3 +6,4 @@ import Queries.persons
 import Queries.rating
 import Queries.user
 import Queries.writers
+import Queries.episode

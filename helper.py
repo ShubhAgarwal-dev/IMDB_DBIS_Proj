@@ -4,8 +4,10 @@ from typing import Union, Tuple
 
 from pydantic import BaseModel, Field
 
-import Queries.persons
+import db_handler
 from db_handler import run_select_query
+
+import Queries
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
@@ -51,8 +53,8 @@ class SearchParams(BaseModel):
     language: Union[str, None] = None  # FOR AKAS
     is_original_title: Union[bool, None] = None  # FOR AKAS
     # attributes: Union[TitleTypes, None] = None
-    rating: Union[float, None] = Field(None, gt=0, le=10)
-    urating: Union[float, None] = Field(None, gt=0, le=10)
+    rating: Union[float, None] = Field(None, ge=0, le=10)
+    urating: Union[float, None] = Field(None, ge=0, le=10)
     # genres: Union[List[Genres], None] = None
 
 
@@ -170,7 +172,7 @@ def query_builder(params: SearchParams):
     if params.start_year:
         all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.start_year >= {params.start_year}""")
     if params.end_year:
-        all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.end_year <= {params.start_year}""")
+        all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.end_year <= {params.end_year}""")
     if params.rating:
         all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.rating >= {params.rating}""")
     if params.urating:
@@ -225,3 +227,29 @@ def has_user_rated_movie(uname: str, tconst: str) -> Union[Tuple[str], bool]:
 
 def calculate_rating(old_rating, new_rating):
     return old_rating + (new_rating - old_rating) / 2 ** 14
+
+
+def parse_individual_episode(episodes, parent):
+    res = {
+        parent: []
+    }
+    for episode in episodes:
+        res[parent].append({
+            "tconst": episode[0],
+            "season": episode[2],
+            "episode": episode[3]
+        })
+    return res
+
+
+def get_all_episodes_mapping():
+    opt = {
+        "mapping": [],
+        "status": 200
+    }
+    res = db_handler.run_select_query(Queries.episode.get_all_parent())
+    for r in res:
+        p_tconst = r[0]
+        nres = db_handler.run_select_query(Queries.episode.get_episode_of_parent(p_tconst))
+        opt["mapping"].append(parse_individual_episode(nres, p_tconst))
+    return opt

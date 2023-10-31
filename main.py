@@ -199,7 +199,7 @@ async def get_person_details(nconst: str, response: Response):
     return helper.parse_person(query)
 
 
-@app.post("/user/rate")
+@app.post("/user/rate", tags=["user"])
 async def rate_title(credentials: helper.Credentials, tconst: str, rating: float, review: Union[str, None],
                      response: Response):
     if not (uconst := helper.check_user_exists(credentials.username)):
@@ -221,7 +221,7 @@ async def rate_title(credentials: helper.Credentials, tconst: str, rating: float
     return
 
 
-@app.post("/user/signup")
+@app.post("/user/signup", tags=["user"])
 async def add_user(credentials: helper.Credentials, response: Response):
     if helper.check_user_exists(credentials.username):
         response.status_code = status.HTTP_409_CONFLICT
@@ -231,7 +231,7 @@ async def add_user(credentials: helper.Credentials, response: Response):
     return
 
 
-@app.get("/user/titles/{username}")
+@app.get("/user/titles/{username}", tags=["user"])
 async def get_title(username: str, response: Response):
     if not (uconst := helper.check_user_exists(username)):
         response.status_code = status.HTTP_403_FORBIDDEN
@@ -239,7 +239,7 @@ async def get_title(username: str, response: Response):
     return helper.parse_rating(Queries.rating.get_titles(uconst[0]))
 
 
-@app.post("/user/signin")
+@app.post("/user/signin", tags=["user", "auth"])
 async def signin(credentials: helper.Credentials, response: Response):
     if not (uconst := helper.check_user_exists(credentials.username)):
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -255,7 +255,7 @@ async def signin(credentials: helper.Credentials, response: Response):
     }
 
 
-@app.get("/user/rated titles")
+@app.get("/user/rated titles", tags=["user", "auth"])
 async def get_titles():
     return {
         "status": "Work in progress."
@@ -275,14 +275,22 @@ async def get_tv_show_from_start_year(start_year: str, adult: bool, response: Re
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
+
 @app.get("/title/tv_show/end_year", tags=["tv-shows"])
 async def get_tv_show_from_end_year(end_year: str, adult: bool, response: Response):
     query = Queries.basic.get_tv_shows_by_end_year(end_year)
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
 
+
 @app.get("/title/tv_show/genre", tags=["tv-shows"])
 async def get_tv_shows_by_genre(gen_list: str, adult: bool, response: Response):
     query = Queries.basic.get_tv_shows_by_genre(gen_list)
     response.status_code = status.HTTP_200_OK
     return helper.parse_basic(query, adult)
+
+
+@app.get("/title/episodes", tags=["episodes"])
+async def get_episodes(response: Response):
+    response.status_code = status.HTTP_200_OK
+    return helper.get_all_episodes_mapping()
