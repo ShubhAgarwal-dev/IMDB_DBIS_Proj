@@ -44,11 +44,10 @@ def run_update_query(query: str):
     pass
 
 
-def run_insert_query(query: str):
+def run_insert_or_update_query(query: str):
     logging.info(conn.closed)
     logging.debug(query)
     with conn.cursor() as cur:
         cur.execute(query)
     conn.commit()
     return
-

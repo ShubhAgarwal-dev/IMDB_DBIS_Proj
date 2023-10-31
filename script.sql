@@ -1,15 +1,16 @@
 create table if not exists public."Basic"
 (
-    tconst          varchar(9)                   not null,
-    title_type      text                         not null,
-    original_title  varchar(256)                 not null,
-    promotion_title varchar(256)                 not null,
-    is_adult        boolean                      not null,
-    start_year      smallint                     not null,
+    tconst          varchar(9)                    not null,
+    title_type      text                          not null,
+    original_title  varchar(256)                  not null,
+    promotion_title varchar(256)                  not null,
+    is_adult        boolean                       not null,
+    start_year      smallint                      not null,
     end_year        smallint,
     genres          "Genres"[]       default ARRAY ['NOTA'::"Genres"],
-    rating          double precision default 6.9 not null,
-    image_link      text
+    rating          double precision default 6.9  not null,
+    image_link      text,
+    urating         double precision default 7.00 not null
 );
 
 alter table public."Basic"

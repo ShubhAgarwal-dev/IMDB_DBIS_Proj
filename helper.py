@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Union
+from typing import Union, Tuple
 
 from pydantic import BaseModel
 
@@ -128,7 +128,7 @@ def basic_sort_param_checker(param: str) -> bool:
 
 
 def basic_search_param_checker(param: str) -> bool:
-    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "genres", "rating","title_type"}
+    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "genres", "rating", "title_type"}
     print(param)
     if param not in valid_params:
         return False
@@ -156,9 +156,20 @@ def tconst_exists_in_relation(relation: str, tconst: str) -> bool:
     return bool(res)
 
 
-def check_user_exists(uname: str):
+def check_user_exists(uname: str) -> Union[Tuple[str], bool]:
     query = f"""
     SELECT * FROM "User" where username='{uname}';
     """
     res = run_select_query(query)
-    return bool(res)
+    return res[0] if bool(res) else False
+
+
+def has_user_rated_movie(uname: str, tconst: str) -> Union[Tuple[str], bool]:
+    if not (res := check_user_exists(uname)):
+        return False
+    uconst: str = res[0]
+    query = f"""
+    SELECT * FROM "Rating" R WHERE R.uconst='{uconst}' AND R.tconst='{tconst}';
+    """
+    res = run_select_query(query)
+    return res[0] if bool(res) else False
