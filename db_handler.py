@@ -31,11 +31,10 @@ def disconnect_from_db():
     logging.debug("DISCONNECTED FROM DATABASE")
 
 
-def run_select_query(query: str):
+def run_select_query(query: str) -> list:
     logging.info(conn.closed)
     logging.debug(query)
     with conn.cursor() as cur:
-        # cur = conn.cursor()
         cur.execute(query)
         result = cur.fetchall()
     return result
@@ -43,3 +42,13 @@ def run_select_query(query: str):
 
 def run_update_query(query: str):
     pass
+
+
+def run_insert_query(query: str):
+    logging.info(conn.closed)
+    logging.debug(query)
+    with conn.cursor() as cur:
+        cur.execute(query)
+    conn.commit()
+    return
+

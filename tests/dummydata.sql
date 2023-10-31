@@ -1,11 +1,13 @@
-DELETE FROM "Writer";
-DELETE FROM "Director";
-DELETE FROM "Linker";
-DELETE FROM "Akas";
-DELETE FROM "Episode";
-DELETE FROM "Principal";
-DELETE FROM "Person";
-DELETE FROM "Basic";
+truncate table "Linker";
+truncate table "Principal";
+truncate table "Director";
+truncate table "Writer";
+truncate table "Person";
+truncate table "Episode";
+truncate table "Akas";
+truncate table "Rating";
+truncate table "Basic";
+truncate table "User";
 
 INSERT INTO "Basic" ("tconst", "title_type", "original_title", "promotion_title", "is_adult", "start_year", "end_year", "genres", "rating", "image_link")
 VALUES

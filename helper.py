@@ -154,3 +154,11 @@ def tconst_exists_in_relation(relation: str, tconst: str) -> bool:
     logging.debug(bool(res))
     logging.debug(res)
     return bool(res)
+
+
+def check_user_exists(uname: str):
+    query = f"""
+    SELECT * FROM "User" where username='{uname}';
+    """
+    res = run_select_query(query)
+    return bool(res)

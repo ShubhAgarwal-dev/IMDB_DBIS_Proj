@@ -11,11 +11,9 @@ import pw_handler
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
-                    
-                    
+
 app = FastAPI(description=docs.description,
               openapi_tags=docs.tags_metadata)
-
 
 origins = [
     "http://localhost:3000",
@@ -28,6 +26,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.on_event("startup")
 async def app_startup():
@@ -161,14 +160,16 @@ async def get_directors_for_title(tconst: str, response: Response):
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
 
+
 @app.get("/title/id")
-async def get_movie_by_title(tconst:str, response: Response):
-    if not helper.tconst_exists_in_relation("Basic",tconst):
+async def get_movie_by_title(tconst: str, response: Response):
+    if not helper.tconst_exists_in_relation("Basic", tconst):
         response.status_code = status.HTTP_404_NOT_FOUND
         return
     query = Queries.basic.basic_movie_data(tconst)
     response.status_code = status.HTTP_200_OK
-    return helper.parse_basic(query,True)
+    return helper.parse_basic(query, True)
+
 
 @app.get("/allPeople", tags=["Person"])
 async def get_people(response: Response):
@@ -176,24 +177,23 @@ async def get_people(response: Response):
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
 
+
 @app.get("/titles/diretor_id")
-async def get_movie_director(director_id: str,resposne: Response):
+async def get_movie_director(director_id: str, response: Response):
     query = Queries.directors.get_titles_for_director(director_id)
-    resposne.status_code = status.HTTP_200_OK
-    return helper.parse_basic(query,True)
-    
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query, True)
+
+
 @app.get("/person/titles", tags=["Person"])
-async def get_person_movies(nconst:str, adult:bool, response:Response):
+async def get_person_movies(nconst: str, adult: bool, response: Response):
     query = Queries.persons.person_all_movie_query(nconst)
     response.status_code = status.HTTP_200_OK
-    return helper.parse_basic(query,adult)
+    return helper.parse_basic(query, adult)
 
-@app.get("/person/details",tags=["Person"])
-async def get_person_details(nconst:str,response:Response):
+
+@app.get("/person/details", tags=["Person"])
+async def get_person_details(nconst: str, response: Response):
     query = Queries.persons.person_detail_query(nconst)
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
-
-# @app.get("/findAll",tags=["Complete Lookup"])
-# async def complete_lookup(search_text:str, response:Response):
-    
