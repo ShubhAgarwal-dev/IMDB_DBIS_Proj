@@ -1,4 +1,5 @@
 import logging
+from typing import Union
 
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -197,3 +198,35 @@ async def get_person_details(nconst: str, response: Response):
     query = Queries.persons.person_detail_query(nconst)
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
+
+
+@app.post("/user/rate")
+async def rate_title(credentials: helper.Credentials, tconst: str, rating: float, review: Union[str, None],
+                     response: Response):
+    if not (uconst := helper.check_user_exists(credentials.username)):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
+    if not Queries.user.check_if_pwd_correct(credentials.username, credentials.password):
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
+    if res := helper.has_user_rated_movie(credentials.username, tconst):
+        *_, old_rating, review = res
+        Queries.user.update_rating(credentials.username, tconst, rating)
+        rating = rating - old_rating
+    else:
+        Queries.user.insert_rating(uconst, tconst, rating, review)
+    old_movie_rating = db_handler.run_select_query(Queries.basic.get_urating(tconst))[0][0]
+    db_handler.run_insert_or_update_query(
+        Queries.basic.update_urating(tconst, helper.calculate_rating(old_movie_rating, rating)))
+    response.status_code = status.HTTP_200_OK
+    return
+
+
+@app.post("/user/add")
+async def add_user(credentials: helper.Credentials, response: Response):
+    if helper.check_user_exists(credentials.username):
+        response.status_code = status.HTTP_409_CONFLICT
+        return
+    Queries.user.add_user(credentials.username, credentials.password)
+    response.status_code = status.HTTP_200_OK
+    return

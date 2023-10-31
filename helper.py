@@ -54,6 +54,11 @@ class SearchParams(BaseModel):
     num_params: Union[int, None] = 0
 
 
+class Credentials(BaseModel):
+    username: str
+    password: str
+
+
 def parse_basic(query: str, adult: bool):
     res = run_select_query(query)
     logging.debug(res)
@@ -173,3 +178,7 @@ def has_user_rated_movie(uname: str, tconst: str) -> Union[Tuple[str], bool]:
     """
     res = run_select_query(query)
     return res[0] if bool(res) else False
+
+
+def calculate_rating(old_rating, new_rating):
+    return old_rating + (new_rating - old_rating)/2**14

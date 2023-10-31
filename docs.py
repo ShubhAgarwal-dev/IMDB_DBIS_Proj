@@ -22,5 +22,9 @@ tags_metadata = [
         - start_year
         - end_data
         """
+    },
+    {
+        "name": "Person",
+        "description": "A json is returned"
     }
 ]

@@ -74,3 +74,15 @@ def basic_title_by_person(name: str):
                             JOIN "Person" P on P.nconst = L.nconst
                    WHERE P.name LIKE '%{name}%')
     """
+
+
+def update_urating(tconst, new_rating):
+    return f"""
+    UPDATE "Basic" SET urating={new_rating}  WHERE tconst='{tconst}';
+    """
+
+
+def get_urating(tconst):
+    return f"""
+    SELECT urating FROM "Basic" WHERE tconst='{tconst}';
+    """
