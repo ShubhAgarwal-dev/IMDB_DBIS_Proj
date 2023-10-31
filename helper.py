@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Union, Tuple, List
+from typing import Union, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -48,8 +48,8 @@ class SearchParams(BaseModel):
     start_year: Union[int, None] = None
     end_year: Union[int, None] = None
     title: Union[str, None] = None  # FOR AKAS
-    language: Union[str, None] = None
-    is_original_title: Union[bool, None] = None
+    language: Union[str, None] = None  # FOR AKAS
+    is_original_title: Union[bool, None] = None  # FOR AKAS
     # attributes: Union[TitleTypes, None] = None
     rating: Union[float, None] = Field(None, gt=0, le=10)
     urating: Union[float, None] = Field(None, gt=0, le=10)
@@ -173,6 +173,13 @@ def query_builder(params: SearchParams):
         all_queries.append(f"""SELECT * FROM "Basic" B WHERE B.end_year <= {params.start_year}""")
     if params.rating:
         all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.rating >= {params.rating}""")
+    if params.urating:
+        all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.urating >= {params.urating}""")
+    if params.title:
+        if params.language:
+            pass
+        if params.is_original_title:
+            pass
     if not all_queries:
         # No parameter supplied
         return """SELECT * FROM "Basic";"""
@@ -185,6 +192,7 @@ def query_builder(params: SearchParams):
 relations_with_tconst = {"Basic", "Akas", "Director", "Episode", "Linker", "Principal", "Writer"}
 
 
+# noinspection SqlResolve
 def tconst_exists_in_relation(relation: str, tconst: str) -> bool:
     if relation not in relations_with_tconst:
         return False
