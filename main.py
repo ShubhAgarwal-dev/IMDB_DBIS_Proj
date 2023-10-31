@@ -260,3 +260,29 @@ async def get_titles():
     return {
         "status": "Work in progress."
     }
+
+
+@app.get("/title/tv_show/og_title", tags=["tv-shows"])
+async def get_tv_show_from_title(title: str, adult: bool, response: Response):
+    query = Queries.basic.get_tv_shows_by_title(title)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query, adult)
+
+
+@app.get("/title/tv_show/start_year", tags=["tv-shows"])
+async def get_tv_show_from_start_year(start_year: str, adult: bool, response: Response):
+    query = Queries.basic.get_tv_shows_by_rel_year(start_year)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query, adult)
+
+@app.get("/title/tv_show/end_year", tags=["tv-shows"])
+async def get_tv_show_from_end_year(end_year: str, adult: bool, response: Response):
+    query = Queries.basic.get_tv_shows_by_end_year(end_year)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query, adult)
+
+@app.get("/title/tv_show/genre", tags=["tv-shows"])
+async def get_tv_shows_by_genre(gen_list: str, adult: bool, response: Response):
+    query = Queries.basic.get_tv_shows_by_genre(gen_list)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query, adult)

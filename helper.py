@@ -168,9 +168,9 @@ def query_builder(params: SearchParams):
     if params.writer_name:
         all_queries.append(Queries.writers.adv_writer_query(params.writer_name))
     if params.start_year:
-        all_queries.append(f"""SELECT * FROM "Basic" B WHERE B.start_year >= {params.start_year}""")
+        all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.start_year >= {params.start_year}""")
     if params.end_year:
-        all_queries.append(f"""SELECT * FROM "Basic" B WHERE B.end_year <= {params.start_year}""")
+        all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.end_year <= {params.start_year}""")
     if params.rating:
         all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.rating >= {params.rating}""")
     if params.urating:
