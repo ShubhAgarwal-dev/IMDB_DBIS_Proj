@@ -136,8 +136,9 @@ async def title_by_genres(gen_list: str, adult: bool, response: Response):
 
 @app.post("/titles/advSearch")
 async def advanced_search(params: helper.SearchParams, adult: bool, response: Response):
+    query = helper.query_builder(params)
     response.status_code = status.HTTP_200_OK
-    return {"message": "Implementation in progress"}
+    return helper.parse_basic(query, adult)
 
 
 @app.get("/actors")
