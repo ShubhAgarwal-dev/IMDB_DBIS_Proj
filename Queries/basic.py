@@ -86,3 +86,50 @@ def get_urating(tconst):
     return f"""
     SELECT urating FROM "Basic" WHERE tconst='{tconst}';
     """
+
+def get_tv_shows_by_title(title):
+    return f"""
+    SELECT * from "Basic" 
+    WHERE tconst in (
+        SELECT tconst from "Basic" b WHERE b.title_type = 'television'
+    )
+    AND original_title LIKE '%{title}%';
+    """
+    
+def get_tv_shows_by_rel_year(start_year):
+    return f"""
+    SELECT * from "Basic" 
+    WHERE tconst in (
+        SELECT tconst from "Basic" b WHERE b.title_type = 'television'
+    )
+    AND start_year = {start_year};
+    """
+    
+def get_tv_shows_by_end_year(end_year):
+    return f"""
+    SELECT * from "Basic" 
+    WHERE tconst in (
+        SELECT tconst from "Basic" b WHERE b.title_type = 'television'
+    )
+    AND end_year = {end_year};
+    """
+    
+def get_tv_shows_by_genre(option):
+    print(options.find(","))
+    if options.find(",") == -1:
+        option = options
+        return f"""SELECT * FROM "Basic" B WHERE B.tconst IN (
+               SELECT tconst from "Basic" b WHERE b.title_type = 'television' 
+        ) AND '{option}' = ANY (b.genres);
+        """
+    else:
+        options = options.split(",")
+        for index, option in enumerate(options):
+            options[index] = option.strip()
+        base = """SELECT * FROM "Basic" B WHERE B.tconst IN (
+               SELECT tconst from "Basic" b WHERE b.title_type = 'television' 
+        )"""
+        for i in range(len(options) - 1):
+            base += f"""'{options[i]}' = ANY (B.genres) AND """
+        base += f"""'{options[len(options) - 1]}' = ANY (B.genres);"""
+        return base
