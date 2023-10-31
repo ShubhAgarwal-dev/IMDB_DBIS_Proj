@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from typing import Union, Tuple, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 import Queries.persons
 from db_handler import run_select_query
@@ -50,11 +50,10 @@ class SearchParams(BaseModel):
     title: Union[str, None] = None  # FOR AKAS
     language: Union[str, None] = None
     is_original_title: Union[bool, None] = None
-    attributes: Union[TitleTypes, None] = None
-    rating: Union[float, None] = None
-    urating: Union[float, None]
-    genres: Union[List[Genres], None] = None
-    num_params: Union[int, None] = 0
+    # attributes: Union[TitleTypes, None] = None
+    rating: Union[float, None] = Field(None, gt=0, le=10)
+    urating: Union[float, None] = Field(None, gt=0, le=10)
+    # genres: Union[List[Genres], None] = None
 
 
 class Credentials(BaseModel):
@@ -172,12 +171,15 @@ def query_builder(params: SearchParams):
         all_queries.append(f"""SELECT * FROM "Basic" B WHERE B.start_year >= {params.start_year}""")
     if params.end_year:
         all_queries.append(f"""SELECT * FROM "Basic" B WHERE B.end_year <= {params.start_year}""")
+    if params.rating:
+        all_queries.append(f"""SELECT tconst FROM "Basic" B WHERE B.rating >= {params.rating}""")
     if not all_queries:
         # No parameter supplied
         return """SELECT * FROM "Basic";"""
     else:
-        all_queries[-1] = all_queries[-1] + ';'
-        return " INTERSECT ".join(all_queries)
+        inner_part = " INTERSECT ".join(all_queries)
+        final_query = f"""SELECT * FROM "Basic" WHERE tconst IN ({inner_part});"""
+        return final_query
 
 
 relations_with_tconst = {"Basic", "Akas", "Director", "Episode", "Linker", "Principal", "Writer"}
