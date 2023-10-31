@@ -172,7 +172,7 @@ async def movies_by_writer(writer: str):
 
 @app.get("/movie/actor_role")
 async def actor_role_in_movie(actor: str):
-    results = Queries.Shivesh.get_actor_role_in_movie(actor)
+    results = Queries.Shivesh.get_role_of_actor_in_movie(actor)
     return helper.parse_query_results(results)
 
 @app.post("/add_movie")
