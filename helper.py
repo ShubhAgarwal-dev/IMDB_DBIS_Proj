@@ -52,10 +52,8 @@ class SearchParams(BaseModel):
     title: Union[str, None] = None  # FOR AKAS
     language: Union[str, None] = None  # FOR AKAS
     is_original_title: Union[bool, None] = None  # FOR AKAS
-    # attributes: Union[TitleTypes, None] = None
     rating: Union[float, None] = Field(None, ge=0, le=10)
     urating: Union[float, None] = Field(None, ge=0, le=10)
-    # genres: Union[List[Genres], None] = None
 
 
 class Credentials(BaseModel):
@@ -82,7 +80,8 @@ def parse_basic(query: str, adult: bool):
                 "end_year": i[6],
                 "genres": i[7],
                 "rating": i[8],
-                "image_link": i[9]
+                "image_link": i[9],
+                "urating": i[10]
             })
     return result
 

@@ -2,7 +2,8 @@ import logging
 from typing import Union
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Response, status, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
 import Queries
@@ -10,7 +11,7 @@ import db_handler
 import docs
 import helper
 import pw_handler
-from auth_util import create_access_token, jwt_initialization
+from auth_util import create_access_token, jwt_initialization, get_current_user
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
@@ -240,7 +241,7 @@ async def get_title(username: str, response: Response):
 
 
 @app.post("/user/signin", tags=["User", "Auth"])
-async def signin(credentials: helper.Credentials, response: Response):
+async def signin(response: Response, credentials: helper.Credentials):
     if not (uconst := helper.check_user_exists(credentials.username)):
         response.status_code = status.HTTP_404_NOT_FOUND
         return
@@ -251,12 +252,13 @@ async def signin(credentials: helper.Credentials, response: Response):
     response.status_code = status.HTTP_200_OK
     logging.debug(f"UCONST is {uconst[0]}")
     return {
-        "access_token": create_access_token(uconst[0].encode('utf-8'))
+        "access_token": create_access_token(uconst[0].encode('utf-8')),
+        "token_type": "bearer"
     }
 
 
 @app.get("/user/rated titles", tags=["User", "Auth"])
-async def get_titles():
+async def get_titles(token: str = Depends(get_current_user)):
     return {
         "status": "Work in progress."
     }
