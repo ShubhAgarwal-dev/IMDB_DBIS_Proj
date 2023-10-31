@@ -26,5 +26,17 @@ tags_metadata = [
     {
         "name": "Person",
         "description": "A json is returned"
+    },
+    {
+        "name": "Auth",
+        "description": "JWT Authenticated Path"
+    },
+    {
+        "name": "User",
+        "description": "Yet to be added"
+    },
+    {
+        "name": "Episodes",
+        "description": "Yet to be done"
     }
 ]

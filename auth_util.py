@@ -4,6 +4,10 @@ from typing import Union, Any
 
 from jose import jwt
 from pydantic import BaseModel, ValidationError
+from fastapi.security import HTTPBearer
+
+
+jwt_path = HTTPBearer()
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 0.0
 ALGORITHM = None
