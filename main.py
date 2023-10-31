@@ -282,7 +282,7 @@ async def signin(credentials: helper.Credentials, response: Response):
     }
 
 
-@app.get("/user/rated titles", tags=["user", "Auth"])
+@app.get("/user/rated titles", tags=["User", "Auth"])
 async def get_titles():
     return {
         "status": "Work in progress."
