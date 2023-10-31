@@ -1,9 +1,11 @@
 def basic_query():
     return """SELECT DISTINCT * FROM "Basic" b;"""
 
+
 def basic_movie_data(t_const: str):
     return f"""SELECT * FROM "Basic" b WHERE 
         b.tconst = '{t_const}';"""
+
 
 def basic_title_by_name(sub_string: str):
     return f""" SELECT DISTINCT * from "Basic" b WHERE 
@@ -19,7 +21,7 @@ def basic_title_order_by_params(param: str):
 
 def basic_title_filter_by_param_val(param: str, val: str):
     if param == "genres":
-        val = "{"+ val + "}"
+        val = "{" + val + "}"
         return f"""
         SELECT DISTINCT * FROM "Basic" B WHERE B.{param} = '{val}';
         """
@@ -43,6 +45,7 @@ def basic_title_with_genre(options: str):
             base += f"""'{options[i]}' = ANY (B.genres) AND """
         base += f"""'{options[len(options) - 1]}' = ANY (B.genres);"""
         return base
+
 
 def basic_title_by_director(director: str):
     return f"""
@@ -70,4 +73,16 @@ def basic_title_by_person(name: str):
                    FROM "Linker" L
                             JOIN "Person" P on P.nconst = L.nconst
                    WHERE P.name LIKE '%{name}%')
+    """
+
+
+def update_urating(tconst, new_rating):
+    return f"""
+    UPDATE "Basic" SET urating={new_rating}  WHERE tconst='{tconst}';
+    """
+
+
+def get_urating(tconst):
+    return f"""
+    SELECT urating FROM "Basic" WHERE tconst='{tconst}';
     """

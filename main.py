@@ -1,5 +1,7 @@
 import logging
+from typing import Union
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,14 +10,13 @@ import db_handler
 import docs
 import helper
 import pw_handler
+from auth_util import create_access_token, jwt_initialization
 
 logging.basicConfig(filename='logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
-                    
-                    
+
 app = FastAPI(description=docs.description,
               openapi_tags=docs.tags_metadata)
-
 
 origins = [
     "http://localhost:3000",
@@ -29,11 +30,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.on_event("startup")
 async def app_startup():
     logging.debug("APP STARTUP EVENT(S) STARTED")
+    load_dotenv()
     db_handler.connect_to_db()
     pw_handler.make_salter()
+    jwt_initialization()
 
 
 @app.on_event("shutdown")
@@ -161,14 +165,16 @@ async def get_directors_for_title(tconst: str, response: Response):
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
 
+
 @app.get("/title/id")
-async def get_movie_by_title(tconst:str, response: Response):
-    if not helper.tconst_exists_in_relation("Basic",tconst):
+async def get_movie_by_title(tconst: str, response: Response):
+    if not helper.tconst_exists_in_relation("Basic", tconst):
         response.status_code = status.HTTP_404_NOT_FOUND
         return
     query = Queries.basic.basic_movie_data(tconst)
     response.status_code = status.HTTP_200_OK
-    return helper.parse_basic(query,True)
+    return helper.parse_basic(query, True)
+
 
 @app.get("/allPeople", tags=["Person"])
 async def get_people(response: Response):
@@ -176,24 +182,79 @@ async def get_people(response: Response):
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
 
+
 @app.get("/titles/diretor_id")
-async def get_movie_director(director_id: str,resposne: Response):
+async def get_movie_director(director_id: str, response: Response):
     query = Queries.directors.get_titles_for_director(director_id)
-    resposne.status_code = status.HTTP_200_OK
-    return helper.parse_basic(query,True)
-    
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_basic(query, True)
+
+
 @app.get("/person/titles", tags=["Person"])
-async def get_person_movies(nconst:str, adult:bool, response:Response):
+async def get_person_movies(nconst: str, adult: bool, response: Response):
     query = Queries.persons.person_all_movie_query(nconst)
     response.status_code = status.HTTP_200_OK
-    return helper.parse_basic(query,adult)
+    return helper.parse_basic(query, adult)
 
-@app.get("/person/details",tags=["Person"])
-async def get_person_details(nconst:str,response:Response):
+
+@app.get("/person/details", tags=["Person"])
+async def get_person_details(nconst: str, response: Response):
     query = Queries.persons.person_detail_query(nconst)
     response.status_code = status.HTTP_200_OK
     return helper.parse_person(query)
 
-# @app.get("/findAll",tags=["Complete Lookup"])
-# async def complete_lookup(search_text:str, response:Response):
-    
+
+@app.post("/user/rate")
+async def rate_title(credentials: helper.Credentials, tconst: str, rating: float, review: Union[str, None],
+                     response: Response):
+    if not (uconst := helper.check_user_exists(credentials.username)):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
+    if not Queries.user.check_if_pwd_correct(credentials.username, credentials.password):
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
+    if res := helper.has_user_rated_movie(credentials.username, tconst):
+        *_, old_rating, review = res
+        Queries.rating.update_rating(credentials.username, tconst, rating)
+        rating = rating - old_rating
+    else:
+        Queries.rating.insert_rating(uconst[0], tconst, rating, review)
+    old_movie_rating = db_handler.run_select_query(Queries.basic.get_urating(tconst))[0][0]
+    db_handler.run_insert_or_update_query(
+        Queries.basic.update_urating(tconst, helper.calculate_rating(old_movie_rating, rating)))
+    response.status_code = status.HTTP_200_OK
+    return
+
+
+@app.post("/user/signup")
+async def add_user(credentials: helper.Credentials, response: Response):
+    if helper.check_user_exists(credentials.username):
+        response.status_code = status.HTTP_409_CONFLICT
+        return
+    Queries.user.add_user(credentials.username, credentials.password)
+    response.status_code = status.HTTP_200_OK
+    return
+
+
+@app.get("/user/titles/{username}")
+async def get_title(username: str, response: Response):
+    if not (uconst := helper.check_user_exists(username)):
+        response.status_code = status.HTTP_403_FORBIDDEN
+        return
+    return helper.parse_rating(Queries.rating.get_titles(uconst[0]))
+
+
+@app.post("/user/signin")
+async def signin(credentials: helper.Credentials, response: Response):
+    if not (uconst := helper.check_user_exists(credentials.username)):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
+    logging.debug(uconst)
+    if not Queries.user.check_if_pwd_correct(credentials.username, credentials.password):
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
+    response.status_code = status.HTTP_200_OK
+    logging.debug(f"UCONST is {uconst[0]}")
+    return {
+        "access_token": create_access_token(uconst[0].encode('utf-8'))
+    }

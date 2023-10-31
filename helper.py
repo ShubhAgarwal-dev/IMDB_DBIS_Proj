@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Union
+from typing import Union, Tuple
 
 from pydantic import BaseModel
 
@@ -52,6 +52,11 @@ class SearchParams(BaseModel):
     rating: Union[float, str, None] = None
     genres: Union[Genres, None] = None
     num_params: Union[int, None] = 0
+
+
+class Credentials(BaseModel):
+    username: str
+    password: str
 
 
 def parse_basic(query: str, adult: bool):
@@ -115,6 +120,21 @@ def parse_person(query: str):
     return result
 
 
+def parse_rating(query: str):
+    res = run_select_query(query)
+    result = {
+        "rating": [],
+        "status": 200
+    }
+    for i in res:
+        result["rating"].append({
+            "tconst": i[0],
+            "rating": i[1],
+            "review": i[2]
+        })
+    return result
+
+
 def basic_sort_param_checker(param: str) -> bool:
     param_list = [param]
     if "," in param:
@@ -128,7 +148,7 @@ def basic_sort_param_checker(param: str) -> bool:
 
 
 def basic_search_param_checker(param: str) -> bool:
-    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "genres", "rating","title_type"}
+    valid_params = {"start_year", "end_year", "promotion_title", "original_title", "genres", "rating", "title_type"}
     print(param)
     if param not in valid_params:
         return False
@@ -154,3 +174,26 @@ def tconst_exists_in_relation(relation: str, tconst: str) -> bool:
     logging.debug(bool(res))
     logging.debug(res)
     return bool(res)
+
+
+def check_user_exists(uname: str) -> Union[Tuple[str], bool]:
+    query = f"""
+    SELECT * FROM "User" where username='{uname}';
+    """
+    res = run_select_query(query)
+    return res[0] if bool(res) else False
+
+
+def has_user_rated_movie(uname: str, tconst: str) -> Union[Tuple[str], bool]:
+    if not (res := check_user_exists(uname)):
+        return False
+    uconst: str = res[0]
+    query = f"""
+    SELECT * FROM "Rating" R WHERE R.uconst='{uconst}' AND R.tconst='{tconst}';
+    """
+    res = run_select_query(query)
+    return res[0] if bool(res) else False
+
+
+def calculate_rating(old_rating, new_rating):
+    return old_rating + (new_rating - old_rating) / 2 ** 14
