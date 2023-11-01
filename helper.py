@@ -52,10 +52,8 @@ class SearchParams(BaseModel):
     title: Union[str, None] = None  # FOR AKAS
     language: Union[str, None] = None  # FOR AKAS
     is_original_title: Union[bool, None] = None  # FOR AKAS
-    # attributes: Union[TitleTypes, None] = None
     rating: Union[float, None] = Field(None, ge=0, le=10)
     urating: Union[float, None] = Field(None, ge=0, le=10)
-    # genres: Union[List[Genres], None] = None
 
 
 class Credentials(BaseModel):
