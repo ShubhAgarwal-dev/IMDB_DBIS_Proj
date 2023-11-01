@@ -296,3 +296,10 @@ async def get_tv_shows_by_genre(gen_list: str, adult: bool, response: Response):
 async def get_episodes(response: Response):
     response.status_code = status.HTTP_200_OK
     return helper.get_all_episodes_mapping()
+
+
+@app.get("/person/findPerson",tags=["Person"])
+async def get_person_details(name:str,response: Response):
+    query = Queries.persons.find_person_query(name)
+    response.status_code = status.HTTP_200_OK
+    return helper.parse_person(query)

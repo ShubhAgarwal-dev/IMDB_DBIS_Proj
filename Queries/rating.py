@@ -14,7 +14,7 @@ def update_rating(uname: str, tconst: str, rating: float):
 
 def insert_rating(uconst: str, tconst: str, rating: float, review: Union[str, None] = None):
     query = f"""
-    INSERT INTO "Rating" (uconst, tconst, rating, review) values ('{uconst}', '{tconst}', {rating});
+    INSERT INTO "Rating" (uconst, tconst, rating) values ('{uconst}', '{tconst}', {rating});
     """
     db_handler.run_insert_or_update_query(query)
     if review:
