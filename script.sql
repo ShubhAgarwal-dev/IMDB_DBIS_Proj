@@ -1,3 +1,10 @@
+-- CreateEnum
+CREATE TYPE "Genres" AS ENUM ('Fiction', 'Crime', 'Horror', 'Ghoul', 'Romance', 'Fantasy', 'Drama', 'Action', 'War', 'Historical', 'Erotic', 'Adventure', 'Mystery', 'Anime', 'Documentary', 'NOTA');
+
+-- CreateEnum
+CREATE TYPE "title_types" AS ENUM ('alternative', 'dvd', 'festival', 'television', 'video', 'working', 'original_title', 'imdbDisplay');
+
+
 create table if not exists public."Basic"
 (
     tconst          varchar(9)                    not null,
@@ -197,4 +204,3 @@ alter table public."Rating"
     add constraint "Rating_uconst_fkey"
         foreign key (uconst) references public."User"
             on update cascade on delete restrict;
-

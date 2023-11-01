@@ -21,3 +21,9 @@ def adv_person_query(persons_name: str):
             f"""SELECT L.tconst FROM "Linker" L JOIN "Person" P on L.nconst = P.nconst WHERE name LIKE '%{per_name}%'""")
     # total_queries[-1] = total_queries[-1] + ';'
     return " INTERSECT ".join(total_queries)
+
+def find_person_query(name: str):
+    return f"""
+    SELECT * FROM "Person" p
+    WHERE p.name LIKE '%{name}%';
+    """
